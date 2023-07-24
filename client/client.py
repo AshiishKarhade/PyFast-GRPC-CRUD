@@ -1,9 +1,7 @@
 from fastapi import FastAPI
 
-import logging
 import grpc
-import users_pb2
-import users_pb2_grpc
+from client.grpc_server import users_pb2_grpc, users_pb2
 
 app = FastAPI()
 
@@ -17,13 +15,13 @@ async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 
 @app.get("/api/v1/users")
-async def get_users():
+def get_users():
     response = []
+    print("Will try to get the user ...")
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
-        response = stub.GetUsers(users_pb2_grpc.GetUsersRequest())
-    print(response)
-    return response
+        response = stub.GetUsers(users_pb2.GetUsersRequest())
+    print(response.user)
 
 # def run():
 #     response = []
@@ -32,7 +30,7 @@ async def get_users():
 #         stub = users_pb2_grpc.UserServiceStub(channel)
 #         response = stub.GetUsers(users_pb2.GetUsersRequest())
 #     print(response.user)
-
-
+#
+#
 # if __name__ == "__main__":
 #     run()

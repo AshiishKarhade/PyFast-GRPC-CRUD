@@ -1,8 +1,8 @@
 from concurrent import futures
 import logging
 import grpc
-import users_pb2
-import users_pb2_grpc
+from grpc_server import users_pb2
+from grpc_server import users_pb2_grpc
 
 class Users(users_pb2_grpc.UserService):
     def GetUsers(self, request, context):
@@ -14,6 +14,19 @@ class Users(users_pb2_grpc.UserService):
                 password="password"
             )
         ])
+
+    def GetUserById(self, request, context):
+
+        return users_pb2.GetUserByIdResponse()
+
+    def CreateUser(self, request, context):
+        pass
+
+    def UpdateUser(self, request, context):
+        pass
+
+    def DeleteUser(self, request, context):
+        pass
 
 def serve():
     port = "50051"

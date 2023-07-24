@@ -2,3 +2,8 @@
 server/.idea/
 client/.idea/
 .idea/
+
+client/__pycache__/
+server/__pycache__/
+server/grpc_server/__pycache__/
+client/grpc_server/__pycache__/
