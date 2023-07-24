@@ -1,22 +1,8 @@
-from fastapi import FastAPI
 from concurrent import futures
 import logging
 import grpc
 import users_pb2
 import users_pb2_grpc
-
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
 
 class Users(users_pb2_grpc.UserService):
     def GetUsers(self, request, context):
@@ -28,7 +14,6 @@ class Users(users_pb2_grpc.UserService):
                 password="password"
             )
         ])
-
 
 def serve():
     port = "50051"
