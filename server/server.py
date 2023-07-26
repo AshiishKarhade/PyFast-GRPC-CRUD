@@ -4,6 +4,7 @@ import grpc
 from grpc_server import users_pb2
 from grpc_server import users_pb2_grpc
 
+
 class Users(users_pb2_grpc.UserService):
     def GetUsers(self, request, context):
         return users_pb2.GetUsersResponse(user=[
@@ -16,8 +17,14 @@ class Users(users_pb2_grpc.UserService):
         ])
 
     def GetUserById(self, request, context):
-
-        return users_pb2.GetUserByIdResponse()
+        return users_pb2.GetUserByIdResponse(
+            user=users_pb2.User(
+                id="1",
+                name="Ashish K",
+                email="ashish@gmail.com",
+                password="password"
+            )
+        )
 
     def CreateUser(self, request, context):
         pass
@@ -27,6 +34,7 @@ class Users(users_pb2_grpc.UserService):
 
     def DeleteUser(self, request, context):
         pass
+
 
 def serve():
     port = "50051"
