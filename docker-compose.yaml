@@ -9,8 +9,6 @@ services:
     restart: always
     depends_on:
       - db
-    networks:
-      - python-grpc-network
   client:
     build: ./client
     ports:
@@ -20,19 +18,9 @@ services:
       - server
       - db
   db:
-    image: mysql:latest
-    container_name: grpc_db
-    networks:
-      - python-grpc-network
+    image: mysql:5.7
     environment:
-      MYSQL_DATABASE: grpc_db
       MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_USER: "grpc_user"
-      MYSQL_PASSWORD: "grpc_user"
+      MYSQL_ROOT_USER: "admin"
     ports:
       - "3306:3306"
-
-networks:
-  python-grpc-network:
-    driver: bridge
-    name: python-grpc-network
