@@ -3,6 +3,7 @@ import logging
 import grpc
 from grpc_server import users_pb2
 from grpc_server import users_pb2_grpc
+from database.crud import create_user
 
 
 class Users(users_pb2_grpc.UserService):
@@ -27,7 +28,12 @@ class Users(users_pb2_grpc.UserService):
         )
 
     def CreateUser(self, request, context):
-        pass
+        user = request.user
+        # add user to DB
+        create_user(user.name, user.email, user.password)
+        # create response
+        response = users_pb2.CreateUserResponse(user=request.user)
+        return response
 
     def UpdateUser(self, request, context):
         pass
