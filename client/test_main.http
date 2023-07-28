@@ -8,14 +8,40 @@ Accept: application/json
 GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
-###
+### CREATE NEW USER
 
 POST http://localhost:8000/api/v1/createuser
 Content-Type: application/json
 
 {
-    "name": "Ashish K",
-    "email": "ashish@gmail.com",
-    "password": "secretpassword"
+    "name": "Shivani A",
+    "email": "shivani@gmail.com",
+    "password": "secretshivani"
 }
+
+### GET ALL USERS
+
+GET http://localhost:8000/api/v1/users
+Content-Type: application/json
+
+### GET USER BY ID
+
+GET http://localhost:8000/api/v1/user/2
+Content-Type: application/json
+
+#### UPDATE USER
+
+PUT http://localhost:8000/api/v1/update_user/1
+Content-Type: application/json
+
+{
+    "name": "Jane Doe",
+    "email": "janedoe@example.com",
+    "password": "newsecretpassword"
+}
+
+#### DELETE USER
+
+DELETE http://localhost:8000/api/v1/delete_user/1
+Content-Type: application/json
 

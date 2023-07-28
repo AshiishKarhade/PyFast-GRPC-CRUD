@@ -3,43 +3,61 @@ import logging
 import grpc
 from grpc_server import users_pb2
 from grpc_server import users_pb2_grpc
-from database.crud import create_user
+from database import crud
 
 
 class Users(users_pb2_grpc.UserService):
     def GetUsers(self, request, context):
-        return users_pb2.GetUsersResponse(user=[
-            users_pb2.User(
-                id="1",
-                name="Ashish K",
-                email="ashish@gmail.com",
-                password="password"
-            )
-        ])
+        users = crud.get_all_users()
+        user_responses = [users_pb2.User(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            password=user.password
+        ) for user in users]
+        return users_pb2.GetUsersResponse(user=user_responses)
 
     def GetUserById(self, request, context):
-        return users_pb2.GetUserByIdResponse(
-            user=users_pb2.User(
-                id="1",
-                name="Ashish K",
-                email="ashish@gmail.com",
-                password="password"
-            )
+        id = request.id
+        user = crud.get_user_by_id(id)
+        u = users_pb2.User(
+            id=str(user.id),
+            name=user.name,
+            email=user.email,
+            password=user.password
         )
+        print(u.name)
+        response = users_pb2.GetUserByIdResponse(user=u)
+        return response
 
     def CreateUser(self, request, context):
         user = request.user
         # add user to DB
-        create_user(user.name, user.email, user.password)
+        crud.create_user(user.name, user.email, user.password)
         # create response
         response = users_pb2.CreateUserResponse(user=request.user)
         return response
 
     def UpdateUser(self, request, context):
-        pass
+        user = request.user
+        print(user.name)
+        updated_user = crud.update_user(user.id, user.name, user.email, user.password)
+        print(updated_user.name)
+        response = users_pb2.UpdateUserResponse(user=updated_user)
+        return response
+
 
     def DeleteUser(self, request, context):
-        pass
+        id = request.id
+        user = crud.delete_user(id)
+        u = users_pb2.User(
+            id=str(user.id),
+            name=user.name,
+            email=user.email,
+            password=user.password
+        )
+        response = users_pb2.DeleteUserResponse(user=u)
+        return response
 
 
 def serve():

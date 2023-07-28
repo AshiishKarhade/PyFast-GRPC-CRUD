@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from sqlalchemy.orm import Session
 from . import connection
 from . import models
+from sqlalchemy.exc import SQLAlchemyError
 
 
 @contextmanager
@@ -34,13 +35,13 @@ def get_all_users():
 
 def get_user_by_id(user_id):
     with get_db() as db:
-        user = db.query(models.User).filter(models.User.id == user_id).first()
+        user = db.query(models.User).filter(models.User.id == int(user_id)).first()
     return user
 
 
 def update_user(user_id, name, email, password):
     with get_db() as db:
-        user = db.query(models.User).filter(models.User.id == user_id).first()
+        user = db.query(models.User).filter(models.User.id == int(user_id)).first()
         if user:
             user.name = name
             user.email = email
@@ -51,12 +52,17 @@ def update_user(user_id, name, email, password):
 
 
 def delete_user(user_id):
-    with get_db() as db:
-        user = db.query(models.User).filter(models.User.id == user_id).first()
-        if user:
-            db.delete(user)
-            db.commit()
-    return user
+    try:
+        with get_db() as db:
+            user = db.query(models.User).filter(models.User.id == int(user_id)).first()
+            if user:
+                db.delete(user)
+                db.commit()
+        return user
+    except SQLAlchemyError as e:
+        print(f"Error deleting user with ID {user_id}: {e}")
+        db.rollback()
+        return None
 
 
 def main():

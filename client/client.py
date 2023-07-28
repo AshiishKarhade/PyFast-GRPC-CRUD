@@ -19,7 +19,6 @@ async def say_hello(name: str):
 
 @app.get("/api/v1/users")
 def get_users():
-    print("Will try to get user ...")
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
         response = stub.GetUsers(users_pb2.GetUsersRequest())
@@ -28,10 +27,9 @@ def get_users():
 
 @app.get("/api/v1/user/{id}")
 def get_user_by_id(id: int):
-    print("Will try to get the user ...")
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
-        response = stub.GetUserById(users_pb2.GetUserByIdRequest(id=id))
+        response = stub.GetUserById(users_pb2.GetUserByIdRequest(id=str(id)))
     print(response.user)
 
 
@@ -48,11 +46,23 @@ def create_user(user_data: dict):
     print(response.user)
 
 
-@app.update("/api/v1/updateuser/{id}")
-def update_user(user_data: dict):
-    pass
+@app.put("/api/v1/updateuser/{id}")
+def update_user(id: int, user_data: dict):
+    user = users_pb2.User(
+        id=str(id),
+        name=user_data.get("name"),
+        email=user_data.get("email"),
+        password=user_data.get("password")
+    )
+    with grpc.insecure_channel("localhost:50051") as channel:
+        stub = users_pb2_grpc.UserServiceStub(channel)
+        response = stub.UpdateUser(users_pb2.UpdateUserRequest(user=user))
+    print(response.user)
 
 
 @app.delete("/api/v1/deleteuser/{id}")
 def delete_user(id: int):
-    pass
+    with grpc.insecure_channel("localhost:50051") as channel:
+        stub = users_pb2_grpc.UserServiceStub(channel)
+        response = stub.DeleteUser(users_pb2.DeleteUserRequest(id=str(id)))
+    print(response.user)
