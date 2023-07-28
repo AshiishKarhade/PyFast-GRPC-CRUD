@@ -12,10 +12,9 @@ def get_db():
     finally:
         db.close()
 
-
-def get_user(db: Session, user_id: int):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    return user
+# def get_user(db: Session, user_id: int):
+#     user = db.query(models.User).filter(models.User.id == user_id).first()
+#     return user
 
 
 def create_user(name, email, password):
@@ -24,6 +23,39 @@ def create_user(name, email, password):
         db.add(user)
         db.commit()
         db.refresh(user)
+    return user
+
+
+def get_all_users():
+    with get_db() as db:
+        users = db.query(models.User).all()
+    return users
+
+
+def get_user_by_id(user_id):
+    with get_db() as db:
+        user = db.query(models.User).filter(models.User.id == user_id).first()
+    return user
+
+
+def update_user(user_id, name, email, password):
+    with get_db() as db:
+        user = db.query(models.User).filter(models.User.id == user_id).first()
+        if user:
+            user.name = name
+            user.email = email
+            user.password = password
+            db.commit()
+            db.refresh(user)
+    return user
+
+
+def delete_user(user_id):
+    with get_db() as db:
+        user = db.query(models.User).filter(models.User.id == user_id).first()
+        if user:
+            db.delete(user)
+            db.commit()
     return user
 
 
