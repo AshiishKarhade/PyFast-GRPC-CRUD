@@ -6,6 +6,7 @@ from grpc_server import users_pb2_grpc
 
 app = FastAPI()
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -18,7 +19,6 @@ async def say_hello(name: str):
 
 @app.get("/api/v1/users")
 def get_users():
-    response = []
     print("Will try to get user ...")
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
@@ -28,11 +28,10 @@ def get_users():
 
 @app.get("/api/v1/user/{id}")
 def get_user_by_id(id: int):
-    response = []
     print("Will try to get the user ...")
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
-        response = stub.GetUserById(users_pb2.GetUserByIdRequest())
+        response = stub.GetUserById(users_pb2.GetUserByIdRequest(id=id))
     print(response.user)
 
 
@@ -47,3 +46,13 @@ def create_user(user_data: dict):
         stub = users_pb2_grpc.UserServiceStub(channel)
         response = stub.CreateUser(users_pb2.CreateUserRequest(user=user))
     print(response.user)
+
+
+@app.update("/api/v1/updateuser/{id}")
+def update_user(user_data: dict):
+    pass
+
+
+@app.delete("/api/v1/deleteuser/{id}")
+def delete_user(id: int):
+    pass
