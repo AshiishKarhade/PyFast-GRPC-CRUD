@@ -1,28 +1,40 @@
 version: '3.8'
 services:
-  server:
-    build: ./server
+  grpc_server:
+    image: ashiishkarhade/grpc_server
     ports:
-      - "8080:8080"
+      - "50051:50051"
     volumes:
       - ./server:/app
     restart: always
     depends_on:
-      - db
-  client:
-    build: ./client
+      - grpc_db
+    networks:
+      - python-grpc-network
+  grpc_client:
+    image: ashiishkarhade/grpc_client
     ports:
-      - "8081:8081"
+      - "8000:8000"
     restart: always
     depends_on:
-      - server
-      - db
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_ROOT_USER: "admin"
+      - grpc_server
+      - grpc_db
+    networks:
+      - python-grpc-network
+  grpc_db:
+    image: mysql:latest
+    container_name: grpc_db
+    networks:
+      - python-grpc-network
     ports:
       - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: grpc_db
+      MYSQL_USER: grpc_user
+      MYSQL_PASSWORD: grpc_password
 
+networks:
+  python-grpc-network:
+    driver: bridge
 #docker run --name grpc_db --network python-grpc-network -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=grpc_db -e MYSQL_USER=grpc_user -e MYSQL_PASSWORD=grpc_password mysql:latest

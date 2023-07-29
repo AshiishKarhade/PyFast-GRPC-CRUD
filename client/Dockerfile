@@ -1,5 +1,7 @@
-FROM python3
+FROM python:slim-bullseye
 WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-RUN pip install -r requirements.txt
-CMD ["python", "main.py"]
+EXPOSE 8000
+CMD ["uvicorn", "client:app", "--host", "0.0.0.0", "--port", "8000"]
