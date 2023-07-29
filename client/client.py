@@ -48,12 +48,14 @@ def create_user(user_data: dict):
 
 @app.put("/api/v1/updateuser/{id}")
 def update_user(id: int, user_data: dict):
+    print("Updating...")
     user = users_pb2.User(
         id=str(id),
         name=user_data.get("name"),
         email=user_data.get("email"),
         password=user_data.get("password")
     )
+    # print(user.id)
     with grpc.insecure_channel("localhost:50051") as channel:
         stub = users_pb2_grpc.UserServiceStub(channel)
         response = stub.UpdateUser(users_pb2.UpdateUserRequest(user=user))

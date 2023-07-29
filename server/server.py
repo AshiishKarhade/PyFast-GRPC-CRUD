@@ -1,10 +1,14 @@
 from concurrent import futures
 import logging
+from fileinput import filename
+
 import grpc
 from grpc_server import users_pb2
 from grpc_server import users_pb2_grpc
 from database import crud
 
+logging.basicConfig(filename="application.log", format='%(asctime)s %(message)s', filemode='w')
+logger = logging.getLogger()
 
 class Users(users_pb2_grpc.UserService):
     def GetUsers(self, request, context):
@@ -26,7 +30,6 @@ class Users(users_pb2_grpc.UserService):
             email=user.email,
             password=user.password
         )
-        print(u.name)
         response = users_pb2.GetUserByIdResponse(user=u)
         return response
 
@@ -40,12 +43,11 @@ class Users(users_pb2_grpc.UserService):
 
     def UpdateUser(self, request, context):
         user = request.user
-        print(user.name)
+        logger.debug(user.name)
         updated_user = crud.update_user(user.id, user.name, user.email, user.password)
-        print(updated_user.name)
+        logger.debug(updated_user.name)
         response = users_pb2.UpdateUserResponse(user=updated_user)
         return response
-
 
     def DeleteUser(self, request, context):
         id = request.id
